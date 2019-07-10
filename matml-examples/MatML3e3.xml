@@ -3,12 +3,12 @@
 	******************************************************************************************************************************
 	MatML Version 3.0 Schema Example 3 - Steel with TiC Coating from a Journal Article
 	Prepared by - E.F. Begley, NIST
-	Source - A. Agarwal and N.B. Dahotre, “Pulsed Electrode Surfacing of Steel With TiC Coating -
-	Microstructure and Wear Properties,” ASM Journal of Materials Engineering and Performance, Vol. 8,
+	Source - A. Agarwal and N.B. Dahotre, Pulsed Electrode Surfacing of Steel With TiC Coating -
+	Microstructure and Wear Properties, ASM Journal of Materials Engineering and Performance, Vol. 8,
 	No. 4, pp. 479-486, 1999.
 
 	Modified 16 July 2004 by Craig Seymour, Granta Design to match MatML Version 3.1
-	******************************************************************************************************************************	
+	******************************************************************************************************************************
 -->
 <MatML_Doc xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance" xsi:noNamespaceSchemaLocation="matml31.xsd">
 	<Material>
@@ -66,7 +66,7 @@
 				"A sintered electrode of TiC was used to deposit a coating on these steel coupons. The TiC electrode
 				had 3 to 5 wt% Ni and 1 to 3 wt% Fe as binder. Deposition was carried out using a handheld gun in air
 				at room temperature. Pulsed electrode deposition was carried out at a voltage of 50V and spark time of
-				10µs. The discharge capacitance used for the PES process was 450µF with a current of 25A."
+				10ï¿½s. The discharge capacitance used for the PES process was 450ï¿½F with a current of 25A."
 				</Notes>
 			</ProcessingDetails>
 			<PropertyData property="pr1" technique="mt3" source="ds1">
@@ -109,7 +109,7 @@
 				<Name>monocarbide</Name>
 			</Subclass>
 			<Characterization>
-				<Formula>TiC·xFe</Formula>
+				<Formula>TiCï¿½xFe</Formula>
 				<PhaseComposition>
 					<Name>TiC</Name>
 				</PhaseComposition>
@@ -198,10 +198,10 @@
 		<MeasurementTechniqueDetails id="mt2">
 			<Name>Block-on-Disk Tribometer</Name>
 			<Notes>
-				"The coefficient of friction (µ) was also recorded simultaneously by an interface computer, which acquired
+				"The coefficient of friction (ï¿½) was also recorded simultaneously by an interface computer, which acquired
 				data in the form of electrical output power of the motor. Even though data were recorded at a frequency of
 				1 Hz for a total test time of 10 min, an average of 10 successive points was taken for computing the coefficient
-				of friction, µ. ...the coefficient of friction is calculated by measuring the changes in voltage and current in the
+				of friction, ï¿½. ...the coefficient of friction is calculated by measuring the changes in voltage and current in the
 				electrical circuit of the motor driving the block-on-ring tribometer during loading..."
 			</Notes>
 		</MeasurementTechniqueDetails>
