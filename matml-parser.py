@@ -1,3 +1,6 @@
+# todo: should be possible to read not only the property details, but more about the structure
+# todo: should read also qualifiers
+
 import pprint
 
 import xml.etree.ElementTree as et
