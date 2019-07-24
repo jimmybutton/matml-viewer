@@ -37,12 +37,22 @@ def matml_to_dict(node):
     node_attrib = node.attrib
     data_dict = dict()
 
-    for child in node:
-        data_dict.update(matml_to_dict(child))
-
     if node_attrib:
         for k, v in node_attrib.items():
             data_dict.update({"@{}".format(k): parse_text(v)})
+
+    for child in node:
+        child_dict = matml_to_dict(child)
+        for k, v in child_dict.items():
+            if k in data_dict.keys():
+                if type(data_dict[k]) in [list]:
+                    data_dict[k].append(v)
+                else:
+                    # turn into a list if it is not already
+                    data_dict[k] = [data_dict[k]]
+                    data_dict[k].append(v)
+            else:
+                data_dict.update(child_dict)
 
     if len(data_dict.keys()) > 0:
         node_value = parse_text(node_value)
