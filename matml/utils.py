@@ -83,3 +83,9 @@ def matml_to_dict(node):
         return {node_name: data_dict}
     else:
         return {node_name: parse_text(node_value)}
+
+def make_matson():
+    """
+    from a matml in form of a dictionary, create a nice human readable json
+    """
+    pass
