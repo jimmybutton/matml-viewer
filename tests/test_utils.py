@@ -155,3 +155,29 @@ def test_countries_complete():
     temp = utils.matml_to_dict(node)
     pp.pprint(temp)
     assert temp == target
+
+def test_parse_data():
+    assert utils.parse_data(None) is None
+    assert utils.parse_data(1) == 1
+    assert utils.parse_data(1.23) == 1.23
+
+    assert utils.parse_data('') is None
+    assert utils.parse_data('1.23, 2.34') == [1.23, 2.34]
+    assert utils.parse_data('972,561') == [972, 561]
+    assert utils.parse_data('.0011,.0018,.0023,.0027,.0029') == [.0011,.0018,.0023,.0027,.0029]
+    assert utils.parse_data('4,-,-') == [4, '-', '-']
+    assert utils.parse_data('1109,,') == [1109, None, None]
+    assert utils.parse_data("1.0E5,1.0E6,1.0E7,1.0E8,5.0E8") == [1.0E5,1.0E6,1.0E7,1.0E8,5.0E8]
+
+def test_data_to_list():
+    source = """<Data format="integer">972,561</Data>"""
+    node = et.fromstring(source)
+    assert utils.matml_to_dict(node) == {'Data': [972,561]}
+
+    source = "<Data>23,1370</Data>"
+    node = et.fromstring(source)
+    assert utils.matml_to_dict(node) == {'Data': [23,1370]}
+
+    source = """<Data format="float">+11.5,+8.5,+7,+6.5,+6.5</Data>"""
+    node = et.fromstring(source)
+    assert utils.matml_to_dict(node) == {'Data': [11.5,8.5,7,6.5,6.5]}

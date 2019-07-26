@@ -1,11 +1,11 @@
-from math import log10, floor
-
-def round_sig(x, sig=2):
-    return round(x, sig-int(floor(log10(abs(x))))-1)
+from math import isclose
 
 def parse_text(some_string):
-    """Tries to convert string into integer or double, if not possible returns string.
-    String can be multiple lines, will be concatenated and stripped of whites spaces."""
+    """
+    Tries to convert string into integer or double, if not possible returns string.
+    If string is empty, returns None.
+    String can be multiple lines, will be concatenated and stripped of whites spaces.
+    """
 
     if some_string is None:
         return None
@@ -25,17 +25,39 @@ def parse_text(some_string):
     except ValueError:
         pass
 
-    if round_sig(some_float,6) == some_integer:
+    if isclose(some_float,some_integer, rel_tol=1e-9):
         # if the float is not different from the integer, return the integer
         return some_integer
     else:
         return some_float
+
+def parse_data(some_input, seperator=','):
+    """
+    Takes a string consisting of numbers seperated by comma and turns it into
+    a list of numbers.
+    """
+    if type(some_input) in [float, int] or some_input is None:
+        return some_input
+
+    if isinstance(some_input, str):
+        values = [parse_text(value.strip()) for value in some_input.split(seperator)]
+    else:
+        raise TypeError("parse_data only takes string, float, int or none. provided: {}".format(some_input))
+
+    if len(values) == 1:
+        return values[0]
+    else:
+        return values
 
 def matml_to_dict(node):
     node_name = node.tag
     node_value = node.text
     node_attrib = node.attrib
     data_dict = dict()
+
+    # if nodename is Data, don't care about children and attributes
+    if node_name == 'Data':
+        return {node_name: parse_data(node_value)}
 
     if node_attrib:
         for k, v in node_attrib.items():

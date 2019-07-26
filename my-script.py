@@ -23,23 +23,26 @@ def parse_unit(units):
             unit_str += str(unit_power)
     return unit_str
 
-# filename = "matml-examples/MatML3e1.xml"
-filename = "matml-examples/Zytel FG70G30 HSR2 - Creep 80C.xml"
+# filename = "MatML3e3"
+filename = "Zytel FG70G30 HSR2 - Creep 80C"
 
-with open(filename, 'r', encoding="utf-8") as fp:
+with open("matml-examples/" + filename + ".xml", 'r', encoding="utf-8") as fp:
     orig_data = fp.read()
 
 rootnode = et.fromstring(orig_data)
 
-# with open("sandbox/MatML3e1_own.json", 'w', encoding='utf-8') as fp:
-#     json.dump(mu.matml_to_dict(rootnode), fp, sort_keys=True, indent=4)
+with open("sandbox/" + filename + ".json", 'w', encoding='utf-8') as fp:
+    json.dump(mu.matml_to_dict(rootnode), fp, sort_keys=True, indent=4)
 
 material = mu.matml_to_dict(rootnode)
 
 # print the data
-print(json.dumps(material, sort_keys=True, indent=4, ensure_ascii=False))
+# print(json.dumps(material, sort_keys=True, indent=4, ensure_ascii=False))
 
-material = material.get('EngineeringData').get('Materials')
+try:
+    material = material.get('EngineeringData').get('Materials')
+except:
+    pass
 
 propertydata = material.get('MatML_Doc').get('Material').get('BulkDetails').get('PropertyData')
 propertydetails = material.get('MatML_Doc').get('Metadata').get('PropertyDetails')
@@ -51,8 +54,14 @@ for pr in propertydata:
     pr_name = pr_det.get('Name')
     pr_units = pr_det.get('Units')
     pr_unit = parse_unit(pr_units.get('Unit')) if pr_units is not None else '[-]'
-    pr_value = pr.get('Data').get('#text')
-    print(pr_name, ':', pr_value, pr_unit)
+    pr_data = pr.get('Data')
+    print(pr_name, ':', pr_data, pr_unit)
+
+    qualifiers = pr.get('Qualifier')
+    if qualifiers is not None:
+        qualifiers = qualifiers if isinstance(qualifiers, list) else [qualifiers]
+        for qualifier in qualifiers:
+            print("    Q:", qualifier.get('@name'), ":", qualifier.get('#text'))
 
     parameters = pr.get('ParameterValue')
     if parameters is not None:
@@ -63,5 +72,11 @@ for pr in propertydata:
             pa_name = pa_det.get('Name')
             pa_units = pa_det.get('Units')
             pa_unit = parse_unit(pa_units.get('Unit')) if pa_units is not None else '[-]'
-            pa_value = pa.get('Data')
-            print('   ', pa_name, ':', pa_value, pa_unit)
+            pa_data = pa.get('Data')
+            print('   ', pa_name, ':', pa_data, pa_unit)
+
+            qualifiers = pa.get('Qualifier')
+            if qualifiers is not None:
+                qualifiers = qualifiers if isinstance(qualifiers, list) else [qualifiers]
+                for qualifier in qualifiers:
+                    print("       Q:", qualifier.get('@name'), ":", qualifier.get('#text'))
