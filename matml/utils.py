@@ -49,6 +49,24 @@ def parse_data(some_input, seperator=','):
     else:
         return values
 
+def parse_unit(units):
+    """Parses the MatML Units node (dictionary) with units u and power p into a string of the format u1p1u2p2u3p3..."""
+
+    # if units is not a list, put it in a list
+    units = units if isinstance(units, list) else [units]
+
+    unit_str = ''
+    for unit in units:
+        unit_name = unit.get('Name')
+        unit_power = unit.get('@power')
+        if not unit_str == '':
+            unit_str += '.'
+        if unit_name:
+            unit_str += unit_name
+        if unit_power:
+            unit_str += str(unit_power)
+    return unit_str
+
 def matml_to_dict(node):
     node_name = node.tag
     node_value = node.text
@@ -84,8 +102,76 @@ def matml_to_dict(node):
     else:
         return {node_name: parse_text(node_value)}
 
-def make_matson():
+def get_qualifiers(qualifiers):
     """
-    from a matml in form of a dictionary, create a nice human readable json
+    get qualifiers, if exist and returns a dict of "qualifier_name: data" - pairs
     """
-    pass
+    qualifiers_dict = dict()
+    if qualifiers is not None:
+        qualifiers = qualifiers if isinstance(qualifiers, list) else [qualifiers]
+        for qualifier in qualifiers:
+            qualifiers_dict.update({qualifier.get('@name'): qualifier.get('#text')})
+        return qualifiers_dict
+    else:
+        return None
+
+def get_property(pr, propertydetails):
+    """
+    From a property or parameter, extract useful data and return a dictionary
+    """
+    p = dict()
+    p['id'] = pr.get('@property')
+    pr_det = [pr_det for pr_det in propertydetails if pr_det.get('@id') == p['id']][0]
+    p['name'] = pr_det.get('Name')
+    pr_units = pr_det.get('Units')
+    p['unit'] = parse_unit(pr_units.get('Unit')) if pr_units is not None else '[-]'
+    p['data'] = pr.get('Data')
+    return p
+
+def get_parameter(pa, parameterdetails):
+    """
+    From a property or parameter, extract useful data and return a dictionary
+    """
+    p = dict()
+    p['id'] = pa.get('@parameter')
+    pa_det = [pa_det for pa_det in parameterdetails if pa_det.get('@id') == p['id']][0]
+    p['name'] = pa_det.get('Name')
+    pa_units = pa_det.get('Units')
+    p['unit'] = parse_unit(pa_units.get('Unit')) if pa_units is not None else '[-]'
+    p['data'] = pa.get('Data')
+    return p
+
+def make_matson(matml_dict):
+    """
+    from a matml in form of a dictionary, create a nice human readable json of properties
+    """
+    matson = dict()
+    matson['properties'] = list()
+
+    propertydata = matml_dict.get('Material').get('BulkDetails').get('PropertyData')
+    propertydetails = matml_dict.get('Metadata').get('PropertyDetails')
+    parameterdetails = matml_dict.get('Metadata').get('ParameterDetails')
+
+    for pr in propertydata:
+        # property data will be stored in a dictionary p
+        pr_ = dict()
+
+        # extract some basic properties
+        pr_.update(get_property(pr, propertydetails))
+
+        # get qualifiers, if exist
+        pr_['qualifiers'] = get_qualifiers(pr.get('Qualifier'))
+
+        parameters = pr.get('ParameterValue')
+        if parameters is not None:
+            parameters = parameters if isinstance(parameters, list) else [parameters]
+            params_ = list()
+            for pa in parameters:
+                pa_ = get_parameter(pa, parameterdetails)
+                pa_['qualifiers'] = get_qualifiers(pa.get('Qualifier'))
+                params_.append(pa_)
+            pr_['params'] = params_
+        
+        matson['properties'].append(pr_)
+        
+    return matson
